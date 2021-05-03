@@ -1,25 +1,51 @@
-import logo from './logo.svg';
-import './App.css';
+import React from 'react';
+import { BrowserRouter as Router , Route } from "react-router-dom";
+import { useState, useEffect } from 'react'
+import Header from "./components/Header";
+import Footer from "./components/Footer";
+import About from "./components/About";
+import UserData from "./components/UserData";
 
-function App() {
+const  App=()=> {
+
+  const dataURL="https://reqres.in/api/users";
+  const [usersDetails, setUsersDetails] = useState([])
+  
+  useEffect(() => {
+    const getUserDetails = async () => {
+      const UserDataFromServer = await fetchUserDetails()
+      setUsersDetails(UserDataFromServer.data)
+    }
+    getUserDetails()
+  }, [])
+
+  // Fetch User Details  
+    const fetchUserDetails = async () => {
+    const res = await fetch(dataURL);
+    const data = await res.json();
+    return data
+  }
+
+  
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <Router>
+    <div className="container">
+        <Header />
+        <Route path='/about' component={About} />        
+        <Route path='/' exact render={(props) => (
+            <>
+              {usersDetails.length > 0 ? (
+              <UserData usersDetails={usersDetails}/>
+                ) : (
+                'No Users To Show'
+                )}
+              </>
+          )}
+        />
+        <Footer /> 
     </div>
+    </Router>
   );
 }
 
-export default App;
+export default App
